@@ -2,6 +2,7 @@ package ALCOHOLIC_BOOT.server.entity;
 
 import ALCOHOLIC_BOOT.server.constant.Authority;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter @ToString
 @Table(name = "m_user")
-@DynamicUpdate
 public class User {
     @Id
     @Column(name = "username", length = 30)
@@ -32,6 +32,10 @@ public class User {
     @Column(name = "name", length = 30)
     @NotNull
     private String name;
+
+    @Column(name = "nickname", length = 20)
+    @NotNull
+    private String nickname;
 
     @Column(name = "phone", length = 15)
     private String phone;
@@ -51,4 +55,14 @@ public class User {
     @Column(name = "is_enabled", columnDefinition = "TINYINT(1)")
     @ColumnDefault("true")
     private boolean isEnabled;
+
+    @Builder
+    public User(String username, String password, String name, String nickname, String phone, Authority authority) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.nickname = nickname;
+        this.phone = phone;
+        this.authority = authority;
+    }
 }

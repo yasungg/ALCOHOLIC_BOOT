@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 @Entity
 @Getter @Setter @ToString
 @Table(name = "m_product_img")
-@DynamicUpdate
-@DynamicInsert
 public class ProductImage {
     @Id
     @Column(name = "product_img_id")
