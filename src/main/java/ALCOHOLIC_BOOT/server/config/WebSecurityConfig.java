@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**", "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
+                        .requestMatchers("/authn/**", "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
                         .requestMatchers("/user/**").hasRole(Authority.ROLE_USER.name())
                         .requestMatchers("/admin").hasRole(Authority.ROLE_ADMIN.name())
                         .anyRequest().authenticated());
@@ -53,7 +53,7 @@ public class WebSecurityConfig {
         sharedSecurityConfig(http);
         http
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/auth/login")
+                        .loginPage("http://localhost:3000/authn/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler(
@@ -75,11 +75,13 @@ public class WebSecurityConfig {
         return http.build();
     }
     @Bean
-    private CorsConfigurationSource corsSource() {
+    private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cors = new CorsConfiguration();
         cors.addAllowedHeader("*");
         cors.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "PATCH", "DELETE"));
         cors.addAllowedOrigin("http://localhost:3000");
+        cors.addExposedHeader("Authorization");
+        cors.addExposedHeader("RefreshToken");
         UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
         corsSource.registerCorsConfiguration("/**", cors);
         return corsSource;
