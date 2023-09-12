@@ -33,25 +33,20 @@ public class WebSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
     @Bean
-    private void sharedSecurityConfig(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authn/**", "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
-                        .requestMatchers("/user/**").hasRole(Authority.ROLE_USER.name())
-                        .requestMatchers("/admin").hasRole(Authority.ROLE_ADMIN.name())
-                        .anyRequest().authenticated());
-    }
+                        .requestMatchers("/authn/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
+                        .requestMatchers("/user/**").hasAuthority(Authority.ROLE_USER.name())
+                        .requestMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.name())
+                        .anyRequest().authenticated())
 
-    @Bean
-    public SecurityFilterChain formLogin(HttpSecurity http) throws Exception {
-        sharedSecurityConfig(http);
-        http
                 .formLogin(formLogin -> formLogin
                         .loginPage("http://localhost:3000/authn/login")
                         .usernameParameter("username")
@@ -70,12 +65,12 @@ public class WebSecurityConfig {
                                         response.setHeader("message", "로그인 실패!");
                                         response.sendRedirect("http://localhost:3000/login");
                                     }
-                                })
-                );
+                                }))
+        ;
         return http.build();
     }
     @Bean
-    private CorsConfigurationSource corsConfigurationSource() {
+    protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cors = new CorsConfiguration();
         cors.addAllowedHeader("*");
         cors.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "PATCH", "DELETE"));
