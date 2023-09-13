@@ -22,28 +22,30 @@ public class AbstractAuthnProvider extends AbstractUserDetailsAuthenticationProv
         String dbPassword = userDetails.getPassword();
 
         if(userDetails == null || !passwordEncoder.matches(password, dbPassword)) {
+            log.info("location: AbstractAuthnProvider, BadCredentialsException");
             throw new BadCredentialsException("비밀번호가 틀렸습니다!");
         }
         if(!userDetails.isAccountNonLocked()) {            //계정이 잠긴 경우(true로 고정, 추후 옵션처리 가능)
-            log.info("location: PerfestAuthenticationProvider, LockedException");
+            log.info("location: AbstractAuthnProvider, LockedException");
             throw new LockedException("차단된 회원입니다.");
         }
         if(!userDetails.isEnabled()) {                    //계정이 비활성화된 경우
-            log.info("location: PerfestAuthenticationProvider, DisabledException");
+            log.info("location: AbstractAuthnProvider, DisabledException");
             throw new DisabledException("탈퇴한 회원입니다.");
         }
         if(!userDetails.isAccountNonExpired()) {			//계정이 만료된 경우
-            log.info("location: PerfestAuthenticationProvider, AccountExpiredException");
+            log.info("location: AbstractAuthnProvider, AccountExpiredException");
             throw new AccountExpiredException("만료된 계정입니다.");
         }
         if(!userDetails.isCredentialsNonExpired()) {		//비밀번호가 만료된 경우
-            log.info("location: PerfestAuthenticationProvider, CredentialsExpiredException");
+            log.info("location: AbstractAuthnProvider, CredentialsExpiredException");
             throw new CredentialsExpiredException("만료된 비밀번호입니다.");
         }
     }
 
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+
         return null;
     }
 }

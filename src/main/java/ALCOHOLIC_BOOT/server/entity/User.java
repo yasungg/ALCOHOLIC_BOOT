@@ -65,4 +65,11 @@ public class User {
         this.phone = phone;
         this.authority = authority;
     }
+
+    public User(String subject, String password, String nickname, Authority authority) {
+        this.username = subject;
+        this.password = password;
+        this.nickname = nickname;
+        this.authority = authority;
+    }
 }
