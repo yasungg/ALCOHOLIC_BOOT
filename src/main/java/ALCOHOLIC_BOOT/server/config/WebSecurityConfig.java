@@ -1,6 +1,8 @@
 package ALCOHOLIC_BOOT.server.config;
 
 import ALCOHOLIC_BOOT.server.constant.Authority;
+import ALCOHOLIC_BOOT.server.filter.JwtFilter;
+import ALCOHOLIC_BOOT.server.token.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,10 +33,11 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+    private final TokenService tokenService;
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -42,13 +46,16 @@ public class WebSecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authn/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
+                        .requestMatchers("/forall/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
                         .requestMatchers("/user/**").hasAuthority(Authority.ROLE_USER.name())
                         .requestMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
 
+                .addFilterAfter(new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+
                 .formLogin(formLogin -> formLogin
-                        .loginPage("http://localhost:3000/authn/login")
+                        .loginPage("/login")
+                        .loginProcessingUrl("/sign/in")
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler(
@@ -65,7 +72,8 @@ public class WebSecurityConfig {
                                         response.setHeader("message", "로그인 실패!");
                                         response.sendRedirect("http://localhost:3000/login");
                                     }
-                                }))
+                                })
+                        .permitAll())
         ;
         return http.build();
     }

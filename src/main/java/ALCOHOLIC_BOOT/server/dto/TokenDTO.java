@@ -7,7 +7,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 @Builder
 public class TokenDTO {
     private String grantType;

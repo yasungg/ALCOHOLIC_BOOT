@@ -2,19 +2,17 @@ package ALCOHOLIC_BOOT.server.entity;
 
 import ALCOHOLIC_BOOT.server.constant.Authority;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "m_user")
 public class User {
     @Id

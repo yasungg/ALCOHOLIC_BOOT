@@ -3,26 +3,35 @@ package ALCOHOLIC_BOOT.server.token;
 
 import ALCOHOLIC_BOOT.server.constant.Authority;
 import ALCOHOLIC_BOOT.server.entity.User;
+import ALCOHOLIC_BOOT.server.repository.RefreshTokenRepositoryInterface;
 import ALCOHOLIC_BOOT.server.user.MashilangUserDetails;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.stream.Collectors;
+
+import static ALCOHOLIC_BOOT.server.constant.Authority.ROLE_USER;
 
 @Component("TokenService")
 @RequiredArgsConstructor
 public class TokenService {
     private static final String AUTHORITIES_KEY = "auth";
-
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BEARER_PREFIX = "Bearer ";
     private final TokenGenerator generator;
+    private final RefreshTokenRepositoryInterface refreshTokenRepository;
 
     @Value("${springboot.jwt.secret}")
     private String secretKey;
@@ -55,26 +64,54 @@ public class TokenService {
                     .getBody();
         } catch(ExpiredJwtException e) {
             e.getClaims();
+            throw new JwtException("클레임 파싱 실패!");
         }
     }
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
 
-        if(claims.get(AUTHORITIES_KEY) == null) {
+        if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한정보가 없는 토큰입니다.");
         }
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY)
-                        .toString()
-                        .split(","))
+                                .toString()
+                                .split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+        MashilangUserDetails principal = new MashilangUserDetails(new User());
+        if (claims.get(AUTHORITIES_KEY).equals(ROLE_USER)) {
+            principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), ROLE_USER));
+        }
+        if (claims.get(AUTHORITIES_KEY).equals(Authority.ROLE_ADMIN)) {
+            principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), Authority.ROLE_ADMIN));
+        }
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
 
-        // 구축 중
-//        MashilangUserDetails userDetails = new MashilangUserDetails(new User());
-//        if(claims.get(AUTHORITIES_KEY).equals(Authority.ROLE_USER)) {
-//            userDetails = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), Authority.ROLE_USER));
-//
-//        }
+    public boolean checkExpireTime(long tokenExpiresIn) {
+        boolean isExpired = true;
+        long now = new Date().getTime();
+
+        if(tokenExpiresIn - now <= 0) isExpired = false;
+        return isExpired;
+    }
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        throw new MalformedJwtException("잘못된 토큰입니다.");
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        boolean isValidated = false;
+
+        if(refreshToken.equals(refreshTokenRepository.findByToken(refreshToken)))
+            isValidated = true;
+
+        return isValidated;
+    }
 }
