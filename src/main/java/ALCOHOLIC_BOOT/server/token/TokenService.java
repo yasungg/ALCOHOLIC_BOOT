@@ -103,7 +103,7 @@ public class TokenService {
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
-        throw new MalformedJwtException("잘못된 토큰입니다.");
+        throw new MalformedJwtException("wrong token, location = tokenservice.resolvetoken method");
     }
 
     public boolean validateRefreshToken(String refreshToken) {

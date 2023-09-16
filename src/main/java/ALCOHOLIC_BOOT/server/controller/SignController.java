@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @Slf4j
 @Tag(name = "Sign Controller", description = "로그인 / 회원가입을 위한 컨트롤러입니다.")
 @RequiredArgsConstructor
@@ -32,17 +34,19 @@ public class SignController {
 
     @Operation(summary = "login", description = "로그인 엔드포인트입니다.")
     @PostMapping("/in")
-    public ResponseEntity<TokenDTO> login(@Parameter(description = "사용자 ID = username, Password = password / body타입") @Valid @RequestBody MemberRequestDTO requestBody, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<TokenDTO> login(@Parameter(description = "사용자 ID = username, Password = password / body타입")
+                                              @Valid @RequestBody MemberRequestDTO requestBody, HttpServletRequest request) throws Exception {
+        TokenDTO result = signService.login(requestBody, request);
+        return ResponseEntity.ok(result);
     }
     @Operation(summary = "signup", description = "회원가입 엔드포인트입니다.")
     @PostMapping("/up")
     public ResponseEntity<String> signup(@Parameter(description = "사용자 ID = username, Password = password, 이름 = name, 닉네임 = nickname, 휴대폰번호 = phonne / body")
-                                              @Valid @RequestBody MemberRequestDTO requestBody, HttpServletResponse response) throws UserExistException {
+                                              @Valid @RequestBody MemberRequestDTO requestBody, HttpServletResponse response) throws UserExistException, IOException {
         if(userRepository.findUsernameByUsername(requestBody.getUsername()).isPresent()) throw new UserExistException("이미 가입된 유저입니다.");
 
         signService.signup(requestBody);
-
+        response.sendRedirect("http://localhost:3000/");
         return ResponseEntity.ok("signup completed");
     }
 

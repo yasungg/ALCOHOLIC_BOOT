@@ -42,38 +42,38 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/forall/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
+                        .requestMatchers("/sign/**", "/login", "/forall/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
                         .requestMatchers("/user/**").hasAuthority(Authority.ROLE_USER.name())
                         .requestMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
+                .addFilterBefore(new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+//                .formLogin(formLogin -> formLogin
+//                        .loginProcessingUrl("/sign/in")
+//                        .usernameParameter("username")
+//                        .passwordParameter("password")
+//                        .successHandler(
+//                                new AuthenticationSuccessHandler() {
+//                                    @Override
+//                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+//                                        response.sendRedirect("http://localhost:3000/");
+//                                    }
+//                                })
+//                        .failureHandler(
+//                                new AuthenticationFailureHandler() {
+//                                    @Override
+//                                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+//                                        response.setHeader("message", "로그인 실패!");
+//                                        response.sendRedirect("http://localhost:3000/login");
+//                                    }
+//                                })
+//                        .permitAll())
 
-                .addFilterAfter(new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
 
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .loginProcessingUrl("/sign/in")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .successHandler(
-                                new AuthenticationSuccessHandler() {
-                                    @Override
-                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                                        response.sendRedirect("http://localhost:3000/");
-                                    }
-                                })
-                        .failureHandler(
-                                new AuthenticationFailureHandler() {
-                                    @Override
-                                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                                        response.setHeader("message", "로그인 실패!");
-                                        response.sendRedirect("http://localhost:3000/login");
-                                    }
-                                })
-                        .permitAll())
+
         ;
         return http.build();
     }
