@@ -7,10 +7,13 @@ import ALCOHOLIC_BOOT.server.repository.RefreshTokenRepositoryInterface;
 import ALCOHOLIC_BOOT.server.user.MashilangUserDetails;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -23,6 +26,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import static ALCOHOLIC_BOOT.server.constant.Authority.ROLE_USER;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Component("TokenService")
 @RequiredArgsConstructor
@@ -97,13 +101,13 @@ public class TokenService {
         if(tokenExpiresIn - now <= 0) isExpired = false;
         return isExpired;
     }
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request, HttpServletResponse response) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
-        throw new MalformedJwtException("wrong token, location = tokenservice.resolvetoken method");
+        throw new JwtException("wrong token, location = tokenservice.resolvetoken method");
     }
 
     public boolean validateRefreshToken(String refreshToken) {

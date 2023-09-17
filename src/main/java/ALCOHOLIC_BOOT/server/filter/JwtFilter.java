@@ -17,6 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.naming.AuthenticationException;
 import java.io.IOException;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -24,16 +26,28 @@ public class JwtFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = tokenService.resolveToken(request);
-        log.info("jwt filter 진입");
+        String requestURI =request.getRequestURI();
+
+        if(shouldBypassJwtFilter(requestURI)) {
+            filterChain.doFilter(request, response);
+        }
+
+        String jwt = tokenService.resolveToken(request, response);
         try {
-            if(StringUtils.hasText(jwt) && tokenService.validateToken(jwt)) {
-                Authentication authentication =tokenService.getAuthentication(jwt);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (StringUtils.hasText(jwt) && tokenService.validateToken(jwt)) {
+                    Authentication authentication = tokenService.getAuthentication(jwt);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             throw new RuntimeException("인증 실패, location = jwt filter");
         }
+    }
+    private boolean shouldBypassJwtFilter(String requestURI) {
+        List<String> permittedPatterns = List.of(
+                "/sign/", "/login", "/forall/", "/v3/**", "/swagger-resources/",
+                "/swagger-ui/", "/webjars/", "/swagger/", "/sign-api/exception"
+        );
+        return permittedPatterns.stream().anyMatch(requestURI::startsWith);
     }
 }

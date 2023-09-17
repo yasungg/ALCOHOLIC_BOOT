@@ -1,8 +1,10 @@
 package ALCOHOLIC_BOOT.server.config;
 
 import ALCOHOLIC_BOOT.server.constant.Authority;
+import ALCOHOLIC_BOOT.server.filter.ExceptionFilter;
 import ALCOHOLIC_BOOT.server.filter.JwtFilter;
 import ALCOHOLIC_BOOT.server.token.TokenService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -29,11 +32,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final TokenService tokenService;
+    private final ObjectMapper objectMapper;
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
     @Bean
@@ -44,13 +50,27 @@ public class WebSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .addFilterBefore(new ExceptionFilter(new ObjectMapper()), ExceptionTranslationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+                .securityMatchers(matchers -> matchers
+                        .requestMatchers(
+                                antMatcher("/sign/**"),
+                                antMatcher("/login"),
+                                antMatcher("/forall/**"),
+                                antMatcher("/v3/**"),
+                                antMatcher("/swagger-resources/**"),
+                                antMatcher("/swagger-ui/**"),
+                                antMatcher("/webjars/**"),
+                                antMatcher("/swagger/**"),
+                                antMatcher("/sign-api/exception"),
+                                antMatcher("/user/**"),
+                                antMatcher("/admin/**")
+                        ))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/sign/**", "/login", "/forall/**", "/v3/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
                         .requestMatchers("/user/**").hasAuthority(Authority.ROLE_USER.name())
                         .requestMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
-                .addFilterBefore(new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
 //                .formLogin(formLogin -> formLogin
 //                        .loginProcessingUrl("/sign/in")
 //                        .usernameParameter("username")
@@ -71,9 +91,6 @@ public class WebSecurityConfig {
 //                                    }
 //                                })
 //                        .permitAll())
-
-
-
         ;
         return http.build();
     }
