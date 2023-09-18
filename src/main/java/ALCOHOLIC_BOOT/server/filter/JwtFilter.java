@@ -21,17 +21,20 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Order(Integer.MAX_VALUE)
 public class JwtFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI =request.getRequestURI();
+        log.info(requestURI);
+        log.info("isPassed = {}", shouldBypassJwtFilter(requestURI));
 
         if(shouldBypassJwtFilter(requestURI)) {
             filterChain.doFilter(request, response);
+            return;
         }
-
         String jwt = tokenService.resolveToken(request, response);
         try {
             if (StringUtils.hasText(jwt) && tokenService.validateToken(jwt)) {
@@ -45,8 +48,8 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     private boolean shouldBypassJwtFilter(String requestURI) {
         List<String> permittedPatterns = List.of(
-                "/sign/", "/login", "/forall/", "/v3/**", "/swagger-resources/",
-                "/swagger-ui/", "/webjars/", "/swagger/", "/sign-api/exception"
+                "/sign/", "/login", "/forall", "/v3", "/swagger-resources",
+                "/swagger-ui", "/webjars", "/swagger", "/sign-api/exception"
         );
         return permittedPatterns.stream().anyMatch(requestURI::startsWith);
     }
