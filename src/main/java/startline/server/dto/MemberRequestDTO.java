@@ -9,6 +9,9 @@ import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 public class MemberRequestDTO {
     @NotBlank(message = "e-mail을 입력하세요.")
@@ -26,13 +29,23 @@ public class MemberRequestDTO {
     private String phone;
 
     public User signup(PasswordEncoder passwordEncoder) {
+        Set<Authority> authority = new HashSet<>();
+        authority.add(Authority.ROLE_PRE);
         return User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .name(name)
                 .nickname(nickname)
                 .phone(phone)
-                .authority(Authority.ROLE_PRE)
+                .authorities(authority)
+                .build();
+    }
+    public User setAuthorities(Authority auth) {
+        Set<Authority> authority = new HashSet<>();
+        authority.add(auth);
+
+        return User.builder()
+                .authorities(authority)
                 .build();
     }
 
