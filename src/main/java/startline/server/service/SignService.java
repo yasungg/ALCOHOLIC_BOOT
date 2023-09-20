@@ -33,10 +33,12 @@ public class SignService {
         //refreshToken이 없을 경우, access token과 refresh token을 모두 생성한다.
         if(refreshToken == null)
             return generator.generateTokens(auth);
-        if(refreshToken != null && tokenService.validateRefreshToken(refreshToken) && !tokenService.checkExpireTime(refreshTokenExpiresIn))
-            return generator.generateTokens(auth);
         if(refreshToken != null && tokenService.validateRefreshToken(refreshToken) && tokenService.checkExpireTime(refreshTokenExpiresIn))
+            return generator.generateTokens(auth);
+        if(refreshToken != null && tokenService.validateRefreshToken(refreshToken) && !tokenService.checkExpireTime(refreshTokenExpiresIn))
             return generator.generateAccessToken(auth);
+
+
 
         throw new RuntimeException("로그인 실패! location = SignService.login");
     }

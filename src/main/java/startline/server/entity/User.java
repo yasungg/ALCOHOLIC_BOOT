@@ -74,7 +74,9 @@ public class User {
         this.phone = phone;
         this.authorities = authorities;
     }
-
+    public User(String username) {
+        this.username = username;
+    }
     public User(String subject, String password, String nickname, Set<Authority> authorities) {
         this.username = subject;
         this.password = password;

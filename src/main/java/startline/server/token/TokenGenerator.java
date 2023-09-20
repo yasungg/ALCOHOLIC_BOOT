@@ -2,6 +2,7 @@ package startline.server.token;
 
 import startline.server.dto.TokenDTO;
 import startline.server.entity.RefreshToken;
+import startline.server.entity.User;
 import startline.server.repository.RefreshTokenRepositoryInterface;
 import startline.server.repository.UserRepositoryInterface;
 import startline.server.user.MashilangUserDetails;
@@ -27,6 +28,8 @@ public class TokenGenerator {
     private static final String BEARER_TYPE = "bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 40;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7L * 24 * 60 * 1000;
+
+
     @Value("${springboot.jwt.secret}")
     private static String SECRET_KEY; // application.properties에서 jwt를 암호화할 64byte의 문자열을 불러옴
 
@@ -72,7 +75,7 @@ public class TokenGenerator {
                 .compact();
 
         //생성된 refresh token db에 저장
-        saveRefreshTokenToDB(refreshToken);
+        saveRefreshTokenToDB(refreshToken, refreshTokenExpiresIn.getTime(), authentication.getName());
 
         return TokenDTO.builder()
                 .grantType(BEARER_TYPE)
@@ -133,7 +136,7 @@ public class TokenGenerator {
                 .compact();
 
         //생성된 refresh token db에 저장
-        saveRefreshTokenToDB(refreshToken);
+        saveRefreshTokenToDB(refreshToken, refreshTokenExpiresIn.getTime(), authentication.getName());
 
         return TokenDTO.builder()
                 .grantType(BEARER_TYPE)
@@ -141,8 +144,13 @@ public class TokenGenerator {
                 .refreshTokenExpiresIn(refreshTokenExpiresIn.getTime())
                 .build();
     }
-    private void saveRefreshTokenToDB(String refreshToken) {
-        RefreshToken entity = new RefreshToken(refreshToken);
+    private void saveRefreshTokenToDB(String refreshToken, Long refreshTokenExpiresin, String username) {
+        RefreshToken entity = RefreshToken.builder()
+                .tokenValue(refreshToken)
+                .tokenExpiresIn(refreshTokenExpiresin)
+                .username(username)
+                .build();
+
         refreshTokenRepository.save(entity);
     }
 }

@@ -1,11 +1,10 @@
 package startline.server.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.sql.Ref;
 
 @Getter @Setter @ToString
 @Entity
@@ -25,4 +24,11 @@ public class RefreshToken {
     @JoinColumn(name = "username")
     @NotNull
     private User user;
+
+    @Builder
+    public RefreshToken(String tokenValue, Long tokenExpiresIn, String username) {
+        this.tokenValue = tokenValue;
+        this.tokenExpiresIn = tokenExpiresIn;
+        this.user = new User(username);
+    }
 }
