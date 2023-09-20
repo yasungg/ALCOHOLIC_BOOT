@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class MashilangUserDetails implements UserDetails {
@@ -16,14 +18,14 @@ public class MashilangUserDetails implements UserDetails {
     public MashilangUserDetails(User user) { this.user = user; }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        switch(user.getAuthority()) {
-            case Authority.ROLE_USER : GrantedAuthority userAuthority = new SimpleGrantedAuthority(Authority.ROLE_USER.name());
-                return Collections.singleton(userAuthority);
-            case Authority.ROLE_ADMIN : GrantedAuthority adminAuthority = new SimpleGrantedAuthority(Authority.ROLE_ADMIN.name());
-                return Collections.singleton(adminAuthority);
-        }
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
-        return Collections.emptyList();
+        if(user.getAuthorities().contains(Authority.ROLE_PRE)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_PRE.name()));
+        if(user.getAuthorities().contains(Authority.ROLE_USER)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_USER.name()));
+        if(user.getAuthorities().contains(Authority.ROLE_DOCTOR)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_DOCTOR.name()));
+        if(user.getAuthorities().contains(Authority.ROLE_ADMIN)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.name()));
+
+        return authorities;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class MashilangUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.isAccountNonLocked();
     }
 
     @Override

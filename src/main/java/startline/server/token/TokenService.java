@@ -18,12 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static startline.server.constant.Authority.ROLE_USER;
+import static startline.server.constant.Authority.*;
 
 @Component("TokenService")
 @RequiredArgsConstructor
@@ -80,13 +78,15 @@ public class TokenService {
                                 .split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        MashilangUserDetails principal = new MashilangUserDetails(new User());
-        if (claims.get(AUTHORITIES_KEY).equals(ROLE_USER)) {
-            principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), ROLE_USER));
-        }
-        if (claims.get(AUTHORITIES_KEY).equals(Authority.ROLE_ADMIN)) {
-            principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), Authority.ROLE_ADMIN));
-        }
+        Set<Authority> authority = new HashSet<>();
+
+        if(authorities.contains(ROLE_PRE)) authority.add(ROLE_PRE);
+        if (authorities.contains(ROLE_USER)) authority.add(ROLE_USER);
+        if (authorities.contains(ROLE_ADMIN)) authority.add(ROLE_ADMIN);
+        if(authorities.contains(ROLE_DOCTOR)) authority.add(ROLE_DOCTOR);
+
+        MashilangUserDetails principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), authority));
+
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
     public boolean checkExpireTime(long tokenExpiresIn) {
