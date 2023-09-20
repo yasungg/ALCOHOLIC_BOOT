@@ -81,9 +81,10 @@ public class TokenService {
         Set<Authority> authority = new HashSet<>();
 
         if(authorities.contains(ROLE_PRE)) authority.add(ROLE_PRE);
-        if (authorities.contains(ROLE_USER)) authority.add(ROLE_USER);
-        if (authorities.contains(ROLE_ADMIN)) authority.add(ROLE_ADMIN);
+        if(authorities.contains(ROLE_USER)) authority.add(ROLE_USER);
+        if(authorities.contains(ROLE_ADMIN)) authority.add(ROLE_ADMIN);
         if(authorities.contains(ROLE_DOCTOR)) authority.add(ROLE_DOCTOR);
+
 
         MashilangUserDetails principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), authority));
 
