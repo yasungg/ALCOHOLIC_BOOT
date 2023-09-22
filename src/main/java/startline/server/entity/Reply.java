@@ -28,12 +28,10 @@ public class Reply {
     LocalDateTime replyWrittenTime;
 
     @ManyToOne
-    @JoinColumn(name = "board_id")
     @NotNull
     private Board board;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "username")
     @NotNull
     private User user;
 }

@@ -21,7 +21,7 @@ public class RefreshToken {
     private Long tokenExpiresIn;
 
     @OneToOne
-    @JoinColumn(name = "username")
+//    @JoinColumn(name = "username")
     @NotNull
     private User user;
 

@@ -23,7 +23,6 @@ public class Place {
     private String placePhone;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "place_img_id")
     private List<PlaceImage> placeImage;
 
     @Column(name = "place_address", length = 100)

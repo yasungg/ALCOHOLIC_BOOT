@@ -29,7 +29,6 @@ public class Board {
     private String boardContent;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "username")
     @NotNull
     private User user;
 

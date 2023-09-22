@@ -102,7 +102,7 @@ public class TokenService {
     public boolean validateRefreshToken(String refreshToken) {
         boolean isValidated = false;
 
-        if(refreshToken.equals(refreshTokenRepository.findByToken(refreshToken)))
+        if(refreshToken.equals(refreshTokenRepository.findByTokenValue(refreshToken)))
             isValidated = true;
 
         return isValidated;
