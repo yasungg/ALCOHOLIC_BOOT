@@ -1,6 +1,6 @@
 package startline.server.entity;
 
-import startline.server.constant.Authority;
+import startline.server.constant.AuthorityName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -39,15 +39,9 @@ public class User {
     @Column(name = "profile_img", length = 500)
     private String profileImg;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "s_user_authorities",
-            joinColumns = @JoinColumn(name = "username"),
-            inverseJoinColumns = @JoinColumn(name = "authority_name")
-    )
-    @Column(name = "authorities")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @NotNull
-    private Set<Authority> authorities = new HashSet<>();
+    private Set<UserAuthorities> authorities = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // mappedBy = 연관관계의 주인이 아니다. 이 컬럼은 FK가 아니다. FK의 관리 역할은 상대 쪽에 있다.
     @JoinColumn(name = "tokenValue")
@@ -66,25 +60,19 @@ public class User {
     private boolean isAccountNonLocked;
 
     @Builder
-    public User(String username, String password, String name, String nickname, String phone, Set<Authority> authorities) {
+    public User(String username, String password, String name, String nickname, String phone) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.nickname = nickname;
         this.phone = phone;
-        this.authorities = authorities;
     }
     public User(String username) {
         this.username = username;
     }
-    public User(String subject, String password, String nickname, Set<Authority> authorities) {
+    public User(String subject, String password, String nickname) {
         this.username = subject;
         this.password = password;
         this.nickname = nickname;
-        this.authorities = authorities;
-    }
-
-    public User(Set<Authority> authorities) {
-        this.authorities = authorities;
     }
 }

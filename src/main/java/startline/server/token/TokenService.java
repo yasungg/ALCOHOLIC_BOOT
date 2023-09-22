@@ -1,7 +1,7 @@
 package startline.server.token;
 
 
-import startline.server.constant.Authority;
+import startline.server.constant.AuthorityName;
 import startline.server.entity.User;
 import startline.server.repository.RefreshTokenRepositoryInterface;
 import startline.server.user.MashilangUserDetails;
@@ -21,7 +21,7 @@ import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static startline.server.constant.Authority.*;
+import static startline.server.constant.AuthorityName.*;
 
 @Component("TokenService")
 @RequiredArgsConstructor
@@ -78,14 +78,8 @@ public class TokenService {
                                 .split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        Set<Authority> authority = new HashSet<>();
 
-        if(authorities.contains(ROLE_PRE)) authority.add(ROLE_PRE);
-        if(authorities.contains(ROLE_USER)) authority.add(ROLE_USER);
-        if(authorities.contains(ROLE_ADMIN)) authority.add(ROLE_ADMIN);
-        if(authorities.contains(ROLE_DOCTOR)) authority.add(ROLE_DOCTOR);
-
-        MashilangUserDetails principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname"), authority));
+        MashilangUserDetails principal = new MashilangUserDetails(new User(claims.getSubject(), "", (String) claims.get("nickname")));
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }

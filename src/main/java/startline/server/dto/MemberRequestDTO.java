@@ -1,6 +1,6 @@
 package startline.server.dto;
 
-import startline.server.constant.Authority;
+import startline.server.constant.AuthorityName;
 import startline.server.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,26 +29,16 @@ public class MemberRequestDTO {
     private String phone;
 
     public User signup(PasswordEncoder passwordEncoder) {
-        Set<Authority> authority = new HashSet<>();
-        authority.add(Authority.ROLE_PRE);
+        Set<AuthorityName> authorityName = new HashSet<>();
+        authorityName.add(AuthorityName.ROLE_PRE);
         return User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .name(name)
                 .nickname(nickname)
                 .phone(phone)
-                .authorities(authority)
                 .build();
     }
-    public User setAuthorities(Authority auth) {
-        Set<Authority> authority = new HashSet<>();
-        authority.add(auth);
-
-        return User.builder()
-                .authorities(authority)
-                .build();
-    }
-
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(username, password);
     }

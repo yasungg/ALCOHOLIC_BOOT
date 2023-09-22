@@ -16,6 +16,6 @@ public class PlaceImage {
     @Column(name = "place_img_link", length = 500)
     private String placeImgLink;
 
-    @JoinColumn(name = "place_id")
+    @ManyToOne
     private Place place;
 }

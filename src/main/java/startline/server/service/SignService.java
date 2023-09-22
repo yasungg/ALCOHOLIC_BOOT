@@ -1,8 +1,11 @@
 package startline.server.service;
 
+import startline.server.constant.AuthorityName;
 import startline.server.dto.MemberRequestDTO;
 import startline.server.dto.TokenDTO;
 import startline.server.entity.User;
+import startline.server.entity.UserAuthorities;
+import startline.server.repository.UserAuthoritiesRepositoryInterface;
 import startline.server.repository.UserRepositoryInterface;
 import startline.server.token.TokenGenerator;
 import startline.server.token.TokenService;
@@ -23,6 +26,7 @@ public class SignService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepositoryInterface userRepository;
+    private final UserAuthoritiesRepositoryInterface userAuthoritiesRepository;
     public TokenDTO login(MemberRequestDTO requestBody, HttpServletRequest request) throws Exception {
         UsernamePasswordAuthenticationToken primaryAuthentication = requestBody.toAuthentication();
         Authentication auth = abstractAuthnProvider.authenticate(primaryAuthentication);
@@ -42,9 +46,14 @@ public class SignService {
 
         throw new RuntimeException("로그인 실패! location = SignService.login");
     }
-
     public void signup(MemberRequestDTO requestBody) {
         User user = requestBody.signup(passwordEncoder);
         userRepository.save(user);
+
+        setAuthoritiyForSignUp(requestBody.getUsername());
+    }
+    private void setAuthoritiyForSignUp(String username) {
+        UserAuthorities userAuth = new UserAuthorities(username, AuthorityName.ROLE_PRE);
+        userAuthoritiesRepository.save(userAuth);
     }
 }

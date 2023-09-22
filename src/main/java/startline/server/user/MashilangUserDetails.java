@@ -1,13 +1,12 @@
 package startline.server.user;
 
-import startline.server.constant.Authority;
+import startline.server.constant.AuthorityName;
 import startline.server.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,10 +19,10 @@ public class MashilangUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
-        if(user.getAuthorities().contains(Authority.ROLE_PRE)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_PRE.name()));
-        if(user.getAuthorities().contains(Authority.ROLE_USER)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_USER.name()));
-        if(user.getAuthorities().contains(Authority.ROLE_DOCTOR)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_DOCTOR.name()));
-        if(user.getAuthorities().contains(Authority.ROLE_ADMIN)) authorities.add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.name()));
+        if(user.getAuthorities().contains(AuthorityName.ROLE_PRE)) authorities.add(new SimpleGrantedAuthority(AuthorityName.ROLE_PRE.name()));
+        if(user.getAuthorities().contains(AuthorityName.ROLE_USER)) authorities.add(new SimpleGrantedAuthority(AuthorityName.ROLE_USER.name()));
+        if(user.getAuthorities().contains(AuthorityName.ROLE_DOCTOR)) authorities.add(new SimpleGrantedAuthority(AuthorityName.ROLE_DOCTOR.name()));
+        if(user.getAuthorities().contains(AuthorityName.ROLE_ADMIN)) authorities.add(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.name()));
 
         return authorities;
     }

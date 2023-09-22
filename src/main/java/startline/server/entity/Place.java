@@ -7,8 +7,6 @@ import java.util.List;
 
 @Entity
 @Getter @Setter @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "s_place")
 public class Place {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +22,8 @@ public class Place {
     @Column(name = "place_phone", length = 20)
     private String placePhone;
 
-    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "place_img_id")
     private List<PlaceImage> placeImage;
 
     @Column(name = "place_address", length = 100)

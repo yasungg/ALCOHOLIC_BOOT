@@ -1,6 +1,5 @@
 package startline.server.config;
 
-import startline.server.constant.Authority;
 import startline.server.filter.ExceptionFilter;
 import startline.server.filter.JwtFilter;
 import startline.server.token.TokenService;
