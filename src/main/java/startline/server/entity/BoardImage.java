@@ -19,7 +19,6 @@ public class BoardImage {
     private String boardImgLink;
 
     @ManyToOne
-//    @JoinColumn(name = "board_id")
     @NotNull
     private Board board;
 }

@@ -31,7 +31,7 @@ public class Reply {
     @NotNull
     private Board board;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @NotNull
     private User user;
 }

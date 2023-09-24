@@ -19,7 +19,7 @@ public class Authority {
     @Column(name = "authority_name", length = 20)
     private AuthorityName authorityName;
 
-    @OneToMany(mappedBy = "authority", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "authority", cascade = CascadeType.PERSIST)
     @NotNull
     private Set<UserAuthorities> authorities = new HashSet<>();
 

@@ -32,7 +32,7 @@ public class Board {
     @NotNull
     private User user;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reply> reply;
 
     @Enumerated(EnumType.STRING)
@@ -40,7 +40,7 @@ public class Board {
     @NotNull
     private Category category;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<BoardImage> boardImage;
 
     @CreationTimestamp

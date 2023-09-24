@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import startline.server.constant.AuthorityName;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Getter @Setter @ToString
 @AllArgsConstructor
@@ -19,11 +23,18 @@ public class UserAuthorities {
 
     @ManyToOne
     @JoinColumn(name = "authority_name")
-    private Authority authority;
+    private Set<Authority> authority;
 
     @Builder
-    public UserAuthorities(String username, AuthorityName authorityName) {
+    public UserAuthorities(String username, Set<AuthorityName> authorityName) {
+        Set<Authority> authorities = new HashSet<>();
+
+        for(AuthorityName auth : authorityName) {
+            Authority forAdd = new Authority(auth);
+            authorities.add(forAdd);
+        }
+
         this.user = new User(username);
-        this.authority = new Authority(authorityName);
+        this.authority = authorities;
     }
 }

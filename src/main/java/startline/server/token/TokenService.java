@@ -107,4 +107,10 @@ public class TokenService {
 
         return isValidated;
     }
+    public String parseAuthorities(Authentication auth) {
+        return auth.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
 }

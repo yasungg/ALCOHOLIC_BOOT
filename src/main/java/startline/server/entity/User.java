@@ -43,7 +43,7 @@ public class User {
     @NotNull
     private Set<UserAuthorities> authorities = new HashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // mappedBy = 연관관계의 주인이 아니다. 이 컬럼은 FK가 아니다. FK의 관리 역할은 상대 쪽에 있다.
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true) // mappedBy = 연관관계의 주인이 아니다. 이 컬럼은 FK가 아니다. FK의 관리 역할은 상대 쪽에 있다.
     private RefreshToken refreshToken;
 
     @Column(name = "join_time")
