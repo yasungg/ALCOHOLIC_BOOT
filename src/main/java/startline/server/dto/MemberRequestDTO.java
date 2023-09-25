@@ -29,8 +29,6 @@ public class MemberRequestDTO {
     private String phone;
 
     public User signup(PasswordEncoder passwordEncoder) {
-        Set<AuthorityName> authorityName = new HashSet<>();
-        authorityName.add(AuthorityName.ROLE_PRE);
         return User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))

@@ -7,6 +7,7 @@ import startline.server.constant.AuthorityName;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter @Setter @ToString
@@ -27,14 +28,9 @@ public class UserAuthorities {
 
     @Builder
     public UserAuthorities(String username, Set<AuthorityName> authorityName) {
-        Set<Authority> authorities = new HashSet<>();
-
-        for(AuthorityName auth : authorityName) {
-            Authority forAdd = new Authority(auth);
-            authorities.add(forAdd);
-        }
-
         this.user = new User(username);
-        this.authority = authorities;
+        this.authority = authorityName.stream()
+                .map(Authority::new)
+                .collect(Collectors.toSet());
     }
 }

@@ -1,7 +1,5 @@
 package startline.server.token;
 
-
-import startline.server.constant.AuthorityName;
 import startline.server.entity.User;
 import startline.server.repository.RefreshTokenRepositoryInterface;
 import startline.server.user.MashilangUserDetails;
