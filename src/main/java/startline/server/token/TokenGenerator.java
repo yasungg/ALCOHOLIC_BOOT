@@ -37,7 +37,6 @@ public class TokenGenerator {
     private final UserRepositoryInterface userRepositoryInterface;
     private final MashilangUserDetailsService userDetailsService;
     private final RefreshTokenRepositoryInterface refreshTokenRepository;
-    private final TokenService tokenService;
 
     protected Key keyEncoder(String secretKey) {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -59,7 +58,7 @@ public class TokenGenerator {
         //generate access token
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, tokenService.parseAuthorities(authentication))
+                .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .claim("nickname", nickname)
                 .setExpiration(tokenExpiresIn)
                 .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
@@ -67,7 +66,7 @@ public class TokenGenerator {
         //generate refresh token
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, tokenService.parseAuthorities(authentication))
+                .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
                 .compact();
@@ -96,7 +95,7 @@ public class TokenGenerator {
         //generate access token
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, tokenService.parseAuthorities(authentication))
+                .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .claim("nickname", nickname)
                 .setExpiration(tokenExpiresIn)
                 .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
@@ -117,7 +116,7 @@ public class TokenGenerator {
         //generate refresh token
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, tokenService.parseAuthorities(authentication))
+                .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
                 .compact();
@@ -141,4 +140,10 @@ public class TokenGenerator {
         refreshTokenRepository.save(entity);
     }
 
+    private String parseAuthorities(Authentication auth) {
+        return auth.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
 }

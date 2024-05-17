@@ -27,55 +27,52 @@ public class AdminService {
     private final UserAuthoritiesRepositoryInterface userAuthoritiesRepository;
     private final UserRepositoryInterface userRepository;
 
+//    @Transactional(isolation = Isolation.SERIALIZABLE)
+//    public void addAuthorities(String username, AuthorityName authority) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if(!username.equals(auth.getName())) throw new UsernameNotFoundException("회원 이메일이 일치하지 않습니다.");
+//
+//        Set<AuthorityName> authListForAddDB = new HashSet<>();
+//
+//        Collection<? extends GrantedAuthority> authorities =
+//                Arrays.stream(auth.getAuthorities()
+//                        .toString()
+//                        .split(","))
+//                        .map(SimpleGrantedAuthority::new)
+//                        .collect(Collectors.toList());
+//
+//        if(authority.equals(ROLE_ADMIN) && !authorities.contains(ROLE_USER)) {
+//            authListForAddDB.add(ROLE_ADMIN);
+//            authListForAddDB.add(ROLE_USER);
+//        }
+//        if(authority.equals(ROLE_ADMIN) && authorities.contains(ROLE_USER)) {
+//            authListForAddDB.add(ROLE_ADMIN);
+//        }
+//        if(authority.equals(ROLE_DOCTOR) && !authorities.contains(ROLE_USER)) {
+//            authListForAddDB.add(ROLE_DOCTOR);
+//            authListForAddDB.add(ROLE_USER);
+//        }
+//        if(authority.equals(ROLE_DOCTOR) && authorities.contains(ROLE_USER)) {
+//            authListForAddDB.add(ROLE_DOCTOR);
+//        }
+//
+//        UserAuthorities userAuth = UserAuthorities
+//                .builder()
+//                .username(username)
+//                .authorityName(authListForAddDB)
+//                .build();
+//
+//        userAuthoritiesRepository.save(userAuth);
+//    }
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void addAuthorities(String username, AuthorityName authority) {
+    public void deleteAuthorities(String username, AuthorityName authority) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(!username.equals(auth.getName())) throw new UsernameNotFoundException("회원 이메일이 일치하지 않습니다.");
-
-        Set<AuthorityName> authListForAddDB = new HashSet<>();
-
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(auth.getAuthorities()
-                        .toString()
-                        .split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-        if(authority.equals(ROLE_ADMIN) && !authorities.contains(ROLE_USER)) {
-            authListForAddDB.add(ROLE_ADMIN);
-            authListForAddDB.add(ROLE_USER);
-        }
-        if(authority.equals(ROLE_ADMIN) && authorities.contains(ROLE_USER)) {
-            authListForAddDB.add(ROLE_ADMIN);
-        }
-        if(authority.equals(ROLE_DOCTOR) && !authorities.contains(ROLE_USER)) {
-            authListForAddDB.add(ROLE_DOCTOR);
-            authListForAddDB.add(ROLE_USER);
-        }
-        if(authority.equals(ROLE_DOCTOR) && authorities.contains(ROLE_USER)) {
-            authListForAddDB.add(ROLE_DOCTOR);
+        if(!userAuthoritiesRepository.existsByUsernameAndAuthority(username, authority)) {
+            throw new RuntimeException("해당 회원은 지정된 권한을 가지고 있지 않습니다!");
         }
 
-        UserAuthorities userAuth = UserAuthorities
-                .builder()
-                .username(username)
-                .authorityName(authListForAddDB)
-                .build();
-
-        userAuthoritiesRepository.save(userAuth);
-    }
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void deleteAuthorities(String username, Set<AuthorityName> authority) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!username.equals(auth.getName())) throw new UsernameNotFoundException("회원 이메일이 일치하지 않습니다.");
-
-        for(AuthorityName loopedAuth : authority) {
-            if(userAuthoritiesRepository.existsByUsernameAndAuthority(username, loopedAuth)) {
-                userAuthoritiesRepository.deleteByUsernameAndAuthority(username, loopedAuth);
-            } else {
-                throw new RuntimeException("해당 회원은 지정된 권한을 가지고 있지 않습니다!");
-            }
-        }
+        userAuthoritiesRepository.deleteByUsernameAndAuthority(username, authority);
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void changeUserEnableStatus(String username, boolean status) {

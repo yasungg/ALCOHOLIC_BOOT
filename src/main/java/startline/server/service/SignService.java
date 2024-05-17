@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import startline.server.constant.AuthorityName;
 import startline.server.dto.MemberRequestDTO;
 import startline.server.dto.TokenDTO;
-import startline.server.entity.Authority;
 import startline.server.entity.User;
 import startline.server.entity.UserAuthorities;
 import startline.server.repository.UserAuthoritiesRepositoryInterface;
@@ -20,9 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -62,10 +58,8 @@ public class SignService {
         setAuthoritiyForSignUp(requestBody.getUsername());
     }
     private void setAuthoritiyForSignUp(String username) {
-        Set<AuthorityName> auth = new HashSet<>();
-        auth.add(AuthorityName.ROLE_PRE);
 
-        UserAuthorities userAuth = new UserAuthorities(username, auth);
+        UserAuthorities userAuth = new UserAuthorities(username, AuthorityName.ROLE_PRE);
         userAuthoritiesRepository.save(userAuth);
     }
 }

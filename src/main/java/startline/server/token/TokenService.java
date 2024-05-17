@@ -1,5 +1,6 @@
 package startline.server.token;
 
+import org.springframework.stereotype.Service;
 import startline.server.entity.User;
 import startline.server.repository.RefreshTokenRepositoryInterface;
 import startline.server.user.MashilangUserDetails;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static startline.server.constant.AuthorityName.*;
 
-@Component("TokenService")
+@Service
 @RequiredArgsConstructor
 public class TokenService {
     private static final String AUTHORITIES_KEY = "auth";
@@ -105,10 +106,5 @@ public class TokenService {
 
         return isValidated;
     }
-    public String parseAuthorities(Authentication auth) {
-        return auth.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-    }
+
 }

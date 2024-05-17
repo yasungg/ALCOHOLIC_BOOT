@@ -39,7 +39,7 @@ public class User {
     @Column(name = "profile_img", length = 500)
     private String profileImg;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "username", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @NotNull
     private Set<UserAuthorities> authorities = new HashSet<>();
 
