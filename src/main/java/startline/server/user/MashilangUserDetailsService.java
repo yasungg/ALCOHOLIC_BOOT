@@ -15,10 +15,7 @@ public class MashilangUserDetailsService implements UserDetailsService {
     private final UserRepositoryInterface userRepositoryInterface;
     @Override
     public MashilangUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(userRepositoryInterface.findByUsername(username).isPresent()) {
-            User user = userRepositoryInterface.findByUsername(username).get();
+            User user = userRepositoryInterface.findByUsername(username);
             return new MashilangUserDetails(user);
-        }
-        throw new UsernameNotFoundException("사용자를 찾을 수 없습니다");
     }
 }

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepositoryInterface extends JpaRepository<User, String> {
-    Optional<User> findByUsername(String username);
-    Optional<String> findUsernameByUsername(String usename);
+    User findByUsername(String username);
+    Optional<String> findUsernameByUsername(String username);
 
     @Query("SELECT u.isEnabled FROM User u WHERE u.username = :username")
     boolean checkUserEnableStatus(@Param("username") String username);

@@ -34,6 +34,7 @@ public class SignController {
     @PostMapping("/in")
     public ResponseEntity<TokenDTO> login(@Parameter(description = "사용자 ID = username, Password = password / body타입")
                                               @Valid @RequestBody MemberRequestDTO requestBody, HttpServletRequest request) throws Exception {
+        log.info("signin postmapping 진입");
         TokenDTO result = signService.login(requestBody, request);
         return ResponseEntity.ok(result);
     }
@@ -41,8 +42,9 @@ public class SignController {
     @PostMapping("/up")
     public ResponseEntity<String> signup(@Parameter(description = "사용자 ID = username, Password = password, 이름 = name, 닉네임 = nickname, 휴대폰번호 = phonne / body")
                                               @Valid @RequestBody MemberRequestDTO requestBody, HttpServletResponse response) throws UserExistException, IOException {
-        if(userRepository.findUsernameByUsername(requestBody.getUsername()).isPresent()) throw new UserExistException("이미 가입된 유저입니다.");
-
+        log.info("signup postmapping 진입");
+        if(userRepository.findByUsername(requestBody.getUsername()) != null) throw new UserExistException("이미 가입된 유저입니다.");
+        log.info("signup username validation 통과");
         signService.signup(requestBody);
         response.sendRedirect("http://localhost:3000/");
         return ResponseEntity.ok("signup completed");

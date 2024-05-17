@@ -9,6 +9,7 @@ import java.sql.Ref;
 @Getter @Setter @ToString
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "s_refresh_token")
 public class RefreshToken {
     @Id

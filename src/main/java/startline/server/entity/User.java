@@ -1,6 +1,5 @@
 package startline.server.entity;
 
-import startline.server.constant.AuthorityName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -51,11 +50,11 @@ public class User {
     private LocalDateTime joinTime;
 
     @Column(name = "is_enabled", columnDefinition = "TINYINT(1)")
-    @ColumnDefault("true")
+    @ColumnDefault("1")
     private boolean isEnabled;
 
     @Column(name = "is_account_non_locked", columnDefinition = "TINYINT(1)")
-    @ColumnDefault("true")
+    @ColumnDefault("1")
     private boolean isAccountNonLocked;
 
     @Builder

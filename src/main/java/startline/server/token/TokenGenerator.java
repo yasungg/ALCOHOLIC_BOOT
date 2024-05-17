@@ -30,11 +30,10 @@ public class TokenGenerator {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7L * 24 * 60 * 1000;
 
 
-    @Value("${springboot.jwt.secret}")
-    private static String SECRET_KEY; // application.properties에서 jwt를 암호화할 64byte의 문자열을 불러옴
+    @Value("${spring.jwt.secret}")
+    private String secretKey;
 
     // 이 아래로는 의존성 주입
-    private final UserRepositoryInterface userRepositoryInterface;
     private final MashilangUserDetailsService userDetailsService;
     private final RefreshTokenRepositoryInterface refreshTokenRepository;
 
@@ -43,9 +42,6 @@ public class TokenGenerator {
     }
     public TokenDTO generateTokens(Authentication authentication) {
         MashilangUserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-
-        //권한정보 세팅
-
 
         //만료 시간 세팅
         long now = new Date().getTime();
@@ -61,14 +57,14 @@ public class TokenGenerator {
                 .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .claim("nickname", nickname)
                 .setExpiration(tokenExpiresIn)
-                .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
+                .signWith(keyEncoder(secretKey), SignatureAlgorithm.HS512)
                 .compact();
         //generate refresh token
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .setExpiration(refreshTokenExpiresIn)
-                .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
+                .signWith(keyEncoder(secretKey), SignatureAlgorithm.HS512)
                 .compact();
 
         //생성된 refresh token db에 저장
@@ -98,7 +94,7 @@ public class TokenGenerator {
                 .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .claim("nickname", nickname)
                 .setExpiration(tokenExpiresIn)
-                .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
+                .signWith(keyEncoder(secretKey), SignatureAlgorithm.HS512)
                 .compact();
 
         return TokenDTO.builder()
@@ -118,7 +114,7 @@ public class TokenGenerator {
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, parseAuthorities(authentication))
                 .setExpiration(refreshTokenExpiresIn)
-                .signWith(keyEncoder(SECRET_KEY), SignatureAlgorithm.HS512)
+                .signWith(keyEncoder(secretKey), SignatureAlgorithm.HS512)
                 .compact();
 
         //생성된 refresh token db에 저장

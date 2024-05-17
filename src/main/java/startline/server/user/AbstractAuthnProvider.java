@@ -4,16 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import startline.server.entity.User;
+import startline.server.repository.UserRepositoryInterface;
 
 @Component("AbstractAuthnProvider")
 @RequiredArgsConstructor
 @Slf4j
 public class AbstractAuthnProvider extends AbstractUserDetailsAuthenticationProvider {
     private final PasswordEncoder passwordEncoder;
+    private final MashilangUserDetailsService userDetailsService;
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         String password = (String) authentication.getCredentials();
@@ -43,7 +48,15 @@ public class AbstractAuthnProvider extends AbstractUserDetailsAuthenticationProv
 
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-
+        if (username != null && authentication != null) {
+            log.info("retrieveUser 진입");
+            UserDetails user = userDetailsService.loadUserByUsername(username);
+            log.info("retrieverUser 탈출={}", user);
+            return user;
+        }
+        log.info("null 진입");
         return null;
     }
+
+
 }

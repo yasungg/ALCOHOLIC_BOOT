@@ -76,7 +76,7 @@ public class AdminService {
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void changeUserEnableStatus(String username, boolean status) {
-        if(!username.equals(userRepository.findUsernameByUsername(username)))
+        if((userRepository.findByUsername(username) == null))
             throw new UsernameNotFoundException("해당 회원은 존재하지 않습니다!");
         if(userRepository.checkUserEnableStatus(username) == status)
             throw new RuntimeException("해당 사용자의 상태를" + status + "로 바꿀 수 없습니다.");

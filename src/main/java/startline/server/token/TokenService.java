@@ -31,7 +31,7 @@ public class TokenService {
     private final TokenGenerator generator;
     private final RefreshTokenRepositoryInterface refreshTokenRepository;
 
-    @Value("${springboot.jwt.secret}")
+    @Value("${spring.jwt.secret}")
     private String secretKey;
     public boolean validateToken(String token) throws Exception {
         Key key = generator.keyEncoder(secretKey);
