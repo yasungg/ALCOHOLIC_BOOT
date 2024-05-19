@@ -1,5 +1,6 @@
 package startline.server.controller;
 
+import org.springframework.http.HttpStatus;
 import startline.server.dto.MemberRequestDTO;
 import startline.server.dto.TokenDTO;
 import startline.server.exceptions.UserExistException;
@@ -42,12 +43,10 @@ public class SignController {
     @PostMapping("/up")
     public ResponseEntity<String> signup(@Parameter(description = "사용자 ID = username, Password = password, 이름 = name, 닉네임 = nickname, 휴대폰번호 = phonne / body")
                                               @Valid @RequestBody MemberRequestDTO requestBody, HttpServletResponse response) throws UserExistException, IOException {
-        log.info("signup postmapping 진입");
-        if(userRepository.findByUsername(requestBody.getUsername()) != null) throw new UserExistException("이미 가입된 유저입니다.");
-        log.info("signup username validation 통과");
+        if(userRepository.findByUsername(requestBody.getUsername()) != null) throw new UserExistException();
+
         signService.signup(requestBody);
-        response.sendRedirect("http://localhost:3000/");
-        return ResponseEntity.ok("signup completed");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

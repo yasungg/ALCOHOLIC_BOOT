@@ -1,16 +1,18 @@
 package startline.server.exceptions;
 
 public class UserExistException extends Exception{
-    private final int ERR_CODE;
+    private final String ERR_CODE = "621";
 
-    public UserExistException(String msg, int errcode) {
-        super(msg);
-        ERR_CODE = errcode;
+    public UserExistException() {
+        super();
     }
-    public UserExistException(String msg) {
-        this(msg, 100);
-    }
-    public int getErrorCode() {
+    public String getErrorCode() {
         return ERR_CODE;
+    }
+    public String getMessage() {
+        return "이미 등록된 이메일입니다.";
+    }
+    public void printStackTrace() {
+        printStackTrace(System.err);
     }
 }

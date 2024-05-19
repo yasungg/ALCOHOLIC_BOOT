@@ -17,4 +17,6 @@ public class AdminController {
 
         return ResponseEntity.ok("admin 통과!");
     }
+
+    @PostMapping
 }
